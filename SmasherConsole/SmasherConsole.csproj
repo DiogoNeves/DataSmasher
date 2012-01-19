@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SmasherConsole</RootNamespace>
     <AssemblyName>SmasherConsole</AssemblyName>
-    <StartupObject>SmasherConsole.MainClass</StartupObject>
+    <StartupObject>SmasherConsole.Smasher</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,8 +35,8 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="SmasherConsole.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
