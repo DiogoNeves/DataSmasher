@@ -6,3 +6,11 @@ body {
 a {
   color: #00B7FF;
 }
+
+span.smasherinfo {
+	font-weight: bold;
+}
+
+table.smasherinfo {
+	border: solid 0px black;
+}

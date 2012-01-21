@@ -27,11 +27,16 @@ app.configure('production', function(){
 	app.use(express.errorHandler()); 
 });
 
+//
 // Routes
+//
 
-var smasherList = new Array();
+var smasherList = new Array(); // List of online smashers
 
+// Index
 app.get('/', routes.index);
+
+// Smasher list
 
 app.get('/smasherlist.json', function (req, res) {
 	res.contentType("application/json");
@@ -40,10 +45,24 @@ app.get('/smasherlist.json', function (req, res) {
 });
 
 app.get('/smasherlist', function (req, res) {
-	res.send('test');
+	res.render('list', { title: 'DataSmasher Server', server: 'http://127.0.0.1:3000', list: smasherList });
 });
 
+// Smasher information
+
+app.get('/smasherinfo', routes.missing);
+
+app.get('/smasherinfo/:smasheraddr', function (req, res) {
+	if (smasherList.indexOf(req.params.smasheraddr) !== -1)
+		res.render('smasher', { title: 'DataSmasher Server', smasher: req.params.smasheraddr });
+	else
+		res.render('smasher', { title: 'DataSmasher Server', smasher: null });
+});
+
+// Smasher manipulation
+
 app.post('/addsmasher', function (req, res) {
+	// Validate we have everything we need
 	var address = req.body.Address;
 	if (address != null && address !== undefined) {
 		// Only add if we didn't yet
@@ -57,6 +76,7 @@ app.post('/addsmasher', function (req, res) {
 		res.end();
 	}
 	else {
+		// Invalid parameters
 		res.writeHead(500);
 		res.end('Invalid parameters');
 	}

@@ -1,0 +1,25 @@
+h1= title
+- if(smasher)
+	h3 Smasher Information
+	div#container
+		table.smasherinfo
+			tbody
+				tr
+					td
+						span.smasherinfo Address
+					td 
+						#{smasher}
+				tr
+					td
+						span.smasherinfo State
+					td
+						| Online
+				tr
+					td
+						span.smasherinfo Jobs
+					td
+						ul
+							li Empty
+							li Soon
+- else
+	h3 This Smasher isn't Online

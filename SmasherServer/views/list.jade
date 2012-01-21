@@ -1,0 +1,10 @@
+h1= title
+- if(list.length)
+	h3 Available Smashers
+	div#container
+	ol
+		- each smasher in list
+			li
+				a(href=server + "/smasherinfo/" + smasher) #{smasher}
+- else
+	h3 No Smashers Available
