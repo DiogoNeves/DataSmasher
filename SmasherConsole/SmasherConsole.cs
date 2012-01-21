@@ -12,17 +12,18 @@ namespace SmasherConsole
 		{
 			public SmasherInfo () {}
 
-			public SmasherInfo (string version)
+			public SmasherInfo (string address)
 			{
+				mAddress = address;
 			}
 
-			public string Version
+			public string Address
 			{
-				get { return mVersion; }
-				set { mVersion = value; }
+				get { return mAddress; }
+				set { mAddress = value; }
 			}
 
-			private string mVersion = "0.0.1";
+			private string mAddress = "127.0.0.1:1234";
 		}
 
 		public static void Main (string[] args)
@@ -42,6 +43,7 @@ namespace SmasherConsole
 				smasherInfoData = smasherInfoStream.ToString();
 				smasherInfoStream.Close();
 			}
+			Console.WriteLine("Sending:\n{0}", smasherInfoData);
 
 			// create request
 			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://127.0.0.1:3000/addsmasher");
@@ -60,12 +62,36 @@ namespace SmasherConsole
 			// get response
 			Console.WriteLine("Getting response");
 
-			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-			Stream responseStream = response.GetResponseStream();
-			Console.WriteLine(responseStream.ToString());
-			responseStream.Close();
+			try
+			{
+				HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+				string responseString = "";
+				Stream responseStream = response.GetResponseStream();
+				using (StreamReader reader = new StreamReader(responseStream, Encoding.UTF8))
+				{
+					StringBuilder responseBuilder = new StringBuilder();
+					char[] buffer = new char[BUFFER_SIZE];
+					int count = reader.Read(buffer, 0, BUFFER_SIZE);
+					while (count > 0)
+					{
+						responseBuilder.Append(buffer);
+						count = reader.Read(buffer, 0, BUFFER_SIZE);
+					}
+					responseString = responseBuilder.ToString();
+				}
+
+				Console.WriteLine(responseString);
+				responseStream.Close();
+			}
+			catch (WebException e)
+			{
+				Console.WriteLine("Something went wrong with the response:\n" + e.ToString());
+			}
 
 			Console.WriteLine("Finished Smasher!");
 		}
+
+
+		private const int BUFFER_SIZE = 256;
 	}
 }
