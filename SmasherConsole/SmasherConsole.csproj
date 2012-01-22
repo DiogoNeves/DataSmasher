@@ -53,4 +53,10 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <ProjectReference Include="..\SmasherLibraries\JobProcessor\JobProcessor.csproj">
+      <Project>{F03CBCB8-05B4-44D0-ABB6-BE204E3B4D10}</Project>
+      <Name>JobProcessor</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

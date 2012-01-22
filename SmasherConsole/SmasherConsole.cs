@@ -3,6 +3,7 @@ using System.Net;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using Smasher.JobProcessor;
 
 namespace SmasherConsole
 {
@@ -26,7 +27,7 @@ namespace SmasherConsole
 			private string mAddress = "127.0.0.1:1234";
 		}
 
-		public static void Main (string[] args)
+		public static void AddToServer ()
 		{
 			Console.WriteLine("Starting Smasher!");
 
@@ -89,6 +90,20 @@ namespace SmasherConsole
 			}
 
 			Console.WriteLine("Finished Smasher!");
+		}
+
+		public static void Main (string[] args)
+		{
+			//AddToServer();
+			JobService jobService = JobService.CreateJobService(4);
+
+			// Create jobs
+			for (int i = 0; i < 100; ++i)
+			{
+				jobService.EnqueueJob(new JobInfo(i, (x) => { Console.WriteLine("This is info{0}", x); }));
+			}
+
+			jobService.WaitAll();
 		}
 
 

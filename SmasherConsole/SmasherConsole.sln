@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmasherConsole", "SmasherConsole.csproj", "{C4B984B7-B571-435A-BDB0-A09419DA98F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobProcessor", "..\SmasherLibraries\JobProcessor\JobProcessor.csproj", "{F03CBCB8-05B4-44D0-ABB6-BE204E3B4D10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{C4B984B7-B571-435A-BDB0-A09419DA98F5}.Debug|x86.Build.0 = Debug|x86
 		{C4B984B7-B571-435A-BDB0-A09419DA98F5}.Release|x86.ActiveCfg = Release|x86
 		{C4B984B7-B571-435A-BDB0-A09419DA98F5}.Release|x86.Build.0 = Release|x86
+		{F03CBCB8-05B4-44D0-ABB6-BE204E3B4D10}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F03CBCB8-05B4-44D0-ABB6-BE204E3B4D10}.Debug|x86.Build.0 = Debug|Any CPU
+		{F03CBCB8-05B4-44D0-ABB6-BE204E3B4D10}.Release|x86.ActiveCfg = Release|Any CPU
+		{F03CBCB8-05B4-44D0-ABB6-BE204E3B4D10}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SmasherConsole.csproj

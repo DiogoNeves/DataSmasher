@@ -1,6 +1,11 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="../SmasherLibraries/JobProcessor/JobProcessor.cs">
+    <Files>
+      <File FileName="SmasherConsole.cs" Line="6" Column="15" />
+      <File FileName="../SmasherLibraries/JobProcessor/JobProcessor.cs" Line="3" Column="19" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
