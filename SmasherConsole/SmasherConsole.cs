@@ -3,6 +3,7 @@ using System.Net;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using Smasher;
 using Smasher.JobProcessor;
 
 namespace SmasherConsole
@@ -44,21 +45,31 @@ namespace SmasherConsole
 				smasherInfoData = smasherInfoStream.ToString();
 				smasherInfoStream.Close();
 			}
-			Console.WriteLine("Sending:\n{0}", smasherInfoData);
 
-			// create request
-			HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("http://127.0.0.1:3000/addsmasher");
-			request.Method = "POST";
-			request.UserAgent = "DataSmasher v0.1";
-			request.ContentType = "application/json";
+			HttpWebRequest request = null;
+			try
+			{
+				Console.WriteLine("Sending:\n{0}", smasherInfoData);
 
-			// send post information
-			Console.WriteLine("Setting request content");
-
-			byte[] postData = Encoding.UTF8.GetBytes(smasherInfoData);
-			Stream requestStream = request.GetRequestStream();
-			requestStream.Write(postData, 0, postData.Length);
-			requestStream.Close();
+				// create request
+				request = (HttpWebRequest)HttpWebRequest.Create("http://127.0.0.1:3000/addsmasher");
+				request.Method = "POST";
+				request.UserAgent = "DataSmasher v0.1";
+				request.ContentType = "application/json";
+	
+				// send post information
+				Console.WriteLine("Setting request content");
+	
+				byte[] postData = Encoding.UTF8.GetBytes(smasherInfoData);
+				Stream requestStream = request.GetRequestStream();
+				requestStream.Write(postData, 0, postData.Length);
+				requestStream.Close();
+			}
+			catch (WebException e)
+			{
+				Console.WriteLine("Failed to connect to server:\n{0}", e.ToString());
+				return;
+			}
 
 			// get response
 			Console.WriteLine("Getting response");
@@ -95,15 +106,20 @@ namespace SmasherConsole
 		public static void Main (string[] args)
 		{
 			//AddToServer();
-			JobService jobService = JobService.CreateJobService(4);
 
-			// Create jobs
-			for (int i = 0; i < 100; ++i)
-			{
-				jobService.EnqueueJob(new JobInfo(i, (x) => { Console.WriteLine("This is info{0}", x); }));
-			}
+			SmasherClient client = new SmasherClient();
+			client.Listen(1234, 3000);
 
-			jobService.WaitAll();
+			// Start job service, this will manage any tasks we get from the server
+//			JobService jobService = JobService.CreateJobService(4);
+//
+//			// Create jobs
+//			for (int i = 0; i < 100; ++i)
+//			{
+//				jobService.EnqueueJob(new JobInfo(i, (x) => { Console.WriteLine("This is info{0}", x); }));
+//			}
+//
+//			jobService.WaitAll();
 		}
 
 

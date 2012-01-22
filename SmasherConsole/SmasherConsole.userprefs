@@ -1,10 +1,23 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="../SmasherLibraries/JobProcessor/JobProcessor.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="../SmasherLibraries/Smasher/SmasherClient.cs">
     <Files>
-      <File FileName="SmasherConsole.cs" Line="6" Column="15" />
-      <File FileName="../SmasherLibraries/JobProcessor/JobProcessor.cs" Line="3" Column="19" />
+      <File FileName="SmasherConsole.cs" Line="99" Column="75" />
+      <File FileName="../SmasherLibraries/JobProcessor/JobProcessor.cs" Line="51" Column="33" />
+      <File FileName="../SmasherLibraries/Smasher/SmasherClient.cs" Line="7" Column="13" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="JobProcessor" expanded="True" />
+          <Node name="Smasher" expanded="True" selected="True" />
+          <Node name="SmasherConsole" expanded="True" />
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
