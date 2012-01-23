@@ -41,7 +41,9 @@ namespace Smasher.SmasherLib
 				if (JobFinished != null)
 					JobFinished(this, job);
 				Interlocked.Decrement(ref mNumOfActiveWorkers);
-			})).Start();
+			}));
+				
+			jobThread.Start();
 		}
 
 		public bool HasAvailableWorkers

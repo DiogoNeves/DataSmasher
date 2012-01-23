@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
 using Smasher.SmasherLib;
+using Smasher.SmasherLib.Net;
 using Smasher.JobLib;
 
 namespace Smasher.UI
@@ -13,8 +14,12 @@ namespace Smasher.UI
 	{
 		public static void Main (string[] args)
 		{
-			Console.WriteLine("Test 1");
+			Console.WriteLine("Start Listener");
+			NetworkJobListener jobListener = new NetworkJobListener();
+			if (!jobListener.Listen("localhost:3000", 1234, "0.0.1"))
+				Console.WriteLine("Failed to add to the server");
 
+			Console.WriteLine("Start JobManager");
 			LocalJobConsumer consumer = new LocalJobConsumer(2);
 			consumer.JobStarted += (c, j) => {
 				Console.WriteLine("C1 Started job {0}({1})", j.Id, ((SleepJob)j).SleepTime);
