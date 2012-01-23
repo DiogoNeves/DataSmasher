@@ -5,8 +5,6 @@ using Smasher.JobLib;
 
 namespace Smasher.SmasherLib
 {
-	public delegate void LocalJobEventHandler (IJobConsumer sender, Job job);
-	
 	public class LocalJobConsumer : IJobConsumer
 	{
 		public LocalJobConsumer () : this(4)

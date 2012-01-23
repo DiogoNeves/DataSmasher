@@ -3,8 +3,6 @@ using Smasher.JobLib;
 
 namespace Smasher.SmasherLib
 {
-	public delegate void RemoteJobEventHandler (IJobConsumer sender, Job job);
-	
 	public class RemoteJobConsumer : IJobConsumer
 	{
 		public RemoteJobConsumer ()
