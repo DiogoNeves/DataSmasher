@@ -9,6 +9,7 @@ namespace Smasher.JobLib
 		#region Events
 		event JobEventHandler JobStarted;
 		event JobEventHandler JobFinished;
+		event JobEventHandler JobFailed;
 		#endregion // Events
 		
 		void Consume (Job job);

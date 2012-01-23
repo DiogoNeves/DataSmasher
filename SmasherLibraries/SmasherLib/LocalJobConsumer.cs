@@ -22,6 +22,7 @@ namespace Smasher.SmasherLib
 		#region IJobConsumer implementation
 		public event JobEventHandler JobStarted;
 		public event JobEventHandler JobFinished;
+		public event JobEventHandler JobFailed;
 
 		public void Consume (Job job)
 		{
