@@ -5,6 +5,9 @@ using Smasher.SmasherLib.Net;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
+using System.Net.Sockets;
+using System.Text;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Smasher.SmasherLib
 {
@@ -53,19 +56,65 @@ namespace Smasher.SmasherLib
 				
 				if (mConnectionCount < mMaxNumOfConnections)
 				{
+					// TODO: Would be cool to have an ignore list instead of just self
 					IEnumerable<string> smasherList = mApi.GetSmasherList(mSelfInfo);
 					if (smasherList != null)
 					{
 						foreach (string smasherAddress in smasherList)
 						{
 							Console.WriteLine("Found smasher in {0}", smasherAddress);
+							
+							try
+							{
+								// Start a connection with this smasher
+								// TODO: Add timeout to connection (use a Thread?)
+								IPEndPoint smasherEndPoint = SmasherAddressUtil.GetSmasherEndPoint(smasherAddress);
+								Socket smasher = ConnectToSmasher(smasherEndPoint);
+								if (smasher != null && smasher.Connected)
+								{
+									// Add to connection list!
+								}
+								else
+								{
+									// Ignore this Smasher (hopefully we'll have ignore list later)
+									Console.WriteLine("Ignoring {0}", smasherAddress);
+								}
+							}
+							catch (Exception e)
+							{
+								// Ignore this Smasher (hopefully we'll have ignore list later)
+								Console.WriteLine("Ignoring {0} because of {1}", smasherAddress, e.ToString());
+							}
 						}
 					}
 				}
 				
 				// We don't want this to get too busy, wait a little before updating it again
-				Thread.Sleep(1000);
+				Thread.Sleep(3000);
 			}
+		}
+		
+		private Socket ConnectToSmasher (IPEndPoint smasherEndPoint)
+		{
+			Socket client = new Socket(smasherEndPoint.Address.AddressFamily,
+			                           SocketType.Stream, ProtocolType.Tcp);
+
+			client.Connect(smasherEndPoint);
+				
+			// Shake hands please! We say 'YELLOW' they answer 'SUP' :)
+			byte[] buffer = ServerApi.CONNECTION_ENCODING.GetBytes("YELLOW");
+			client.Send(buffer);
+
+			int read = client.Receive(buffer);
+			string supString = ServerApi.CONNECTION_ENCODING.GetString(buffer, 0, read);
+			if (supString == "SUP")
+			{
+				return client;
+			}
+			
+			client.Close();
+			
+			return null;
 		}
 
 		#region IJobConsumer implementation
@@ -78,6 +127,12 @@ namespace Smasher.SmasherLib
 			Debug.Assert(HasAvailableWorkers, "Doesn't have available workers!");
 			if (mHasJobWaiting)
 				throw new InvalidOperationException("Hey! There's a job waiting! Check HasAvailableWorkers value first!");
+			
+			/*
+			BinaryFormatter formatter = new BinaryFormatter();
+			NetworkStream sendStream = new NetworkStream(client);
+			formatter.Serialize(sendStream, job);
+			*/
 		}
 
 		public bool HasAvailableWorkers {

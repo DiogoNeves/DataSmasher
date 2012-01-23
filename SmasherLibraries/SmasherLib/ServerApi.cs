@@ -76,7 +76,7 @@ namespace Smasher.SmasherLib.Net
 			if (method == POST && !string.IsNullOrEmpty(jsonContent))
 			{
 				request.ContentType = "application/json";
-				byte[] postData = gEncoding.GetBytes(jsonContent == null ? "" : jsonContent);
+				byte[] postData = CONNECTION_ENCODING.GetBytes(jsonContent == null ? "" : jsonContent);
 				Stream requestStream = request.GetRequestStream();
 				requestStream.Write(postData, 0, postData.Length);
 				requestStream.Close();
@@ -86,7 +86,7 @@ namespace Smasher.SmasherLib.Net
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 			Stream responseStream = response.GetResponseStream();
 			StringBuilder responseString = new StringBuilder();
-			using (StreamReader reader = new StreamReader(responseStream, gEncoding))
+			using (StreamReader reader = new StreamReader(responseStream, CONNECTION_ENCODING))
 			{
 				char[] buffer = new char[256];
 				int count = reader.Read(buffer, 0, buffer.Length);
@@ -103,10 +103,10 @@ namespace Smasher.SmasherLib.Net
 		}
 
 		
+		public static readonly Encoding CONNECTION_ENCODING = Encoding.UTF8;
+		
 		private static readonly string GET = "GET";
 		private static readonly string POST = "POST";
-		
-		private static readonly Encoding gEncoding = Encoding.UTF8;
 		
 		private readonly Uri mServerUrl;
 	}

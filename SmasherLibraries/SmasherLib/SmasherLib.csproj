@@ -41,6 +41,7 @@
     <Compile Include="NetworkJobListener.cs" />
     <Compile Include="RemoteJobConsumer.cs" />
     <Compile Include="ServerApi.cs" />
+    <Compile Include="SmasherAddressUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
