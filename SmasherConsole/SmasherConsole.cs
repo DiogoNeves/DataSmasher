@@ -14,9 +14,16 @@ namespace Smasher.UI
 	{
 		public static void Main (string[] args)
 		{
+			string serverAddress = "localhost:3000";
+
 			Console.WriteLine("Start Listener");
+
+			IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[0];
+			ClientInfo selfInfo =
+				new ClientInfo(ipAddress.ToString() + ":1234", "0.0.1");
+
 			NetworkJobListener jobListener = new NetworkJobListener();
-			if (!jobListener.Listen("localhost:3000", 1234, "0.0.1"))
+			if (!jobListener.Listen(serverAddress, selfInfo))
 				Console.WriteLine("Failed to add to the server");
 
 			Console.WriteLine("Start JobManager");
@@ -29,13 +36,17 @@ namespace Smasher.UI
 			};
 
 			// This will be a network consumer
-			LocalJobConsumer consumer2 = new LocalJobConsumer(4);
+			RemoteJobConsumer consumer2 = new RemoteJobConsumer();
+			consumer2.Connect(serverAddress, selfInfo);
+
 			consumer2.JobStarted += (c, j) => {
-				Console.WriteLine("C2 Started job {0}({1})", j.Id, ((SleepJob)j).SleepTime);
+				Console.WriteLine("C2 Started remote job {0}({1})", j.Id, ((SleepJob)j).SleepTime);
 			};
 			consumer2.JobFinished += (c, j) => {
-				Console.WriteLine("C2 Finished job {0}", j.Id);
+				Console.WriteLine("C2 Finished remote job {0}", j.Id);
 			};
+
+			return;
 
 			JobManager manager = new JobManager();
 

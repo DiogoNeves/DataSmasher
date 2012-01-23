@@ -25,7 +25,9 @@ namespace Smasher.SmasherLib
 
 		public void Consume (Job job)
 		{
-			Debug.Assert(mNumOfActiveWorkers < mMaxNumOfWorkers, "Invalid number of workers");
+			Debug.Assert(HasAvailableWorkers, "Doesn't have available workers!");
+			if (!HasAvailableWorkers)
+				throw new InvalidOperationException("Hey! We're busy! Check HasAvailableWorkers value first!");
 			
 			Interlocked.Increment(ref mNumOfActiveWorkers);
 			if (JobStarted != null)

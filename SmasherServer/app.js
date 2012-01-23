@@ -44,6 +44,14 @@ app.get('/smasherlist.json', function (req, res) {
 	res.end();
 });
 
+app.get('/smasherlist.json/filter/:self', function (req, res) {
+	res.contentType("application/json");
+	res.json(smasherList.filter(function (smasher) {
+		return smasher != req.params.self;
+	}));
+	res.end();
+});
+
 app.get('/smasherlist', function (req, res) {
 	res.render('list', { title: 'DataSmasher Server', server: 'http://127.0.0.1:3000', list: smasherList });
 });
