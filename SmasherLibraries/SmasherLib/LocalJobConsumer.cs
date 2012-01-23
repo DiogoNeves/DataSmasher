@@ -37,18 +37,17 @@ namespace Smasher.SmasherLib
 			Thread jobThread = new Thread(new ThreadStart(() => {
 				job.Invoke();
 				
-				// Always do before so that if the event handlers get the number of active workers, it is right :)
-				Interlocked.Decrement(ref mNumOfActiveWorkers);
 				if (JobFinished != null)
 					JobFinished(this, job);
+				Interlocked.Decrement(ref mNumOfActiveWorkers);
 			}));
 			
 			jobThread.Start();
 		}
 
-		public float GetScore ()
+		public bool HasAvailableWorkers
 		{
-			return 1.0f - (mNumOfActiveWorkers / (float)mMaxNumOfWorkers);
+			get { return mNumOfActiveWorkers < mMaxNumOfWorkers; }
 		}
 		#endregion // IJobConsumer implementation
 		

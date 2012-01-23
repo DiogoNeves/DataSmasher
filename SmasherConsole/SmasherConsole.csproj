@@ -58,5 +58,9 @@
       <Project>{344438B8-6988-4BE6-8A1A-86BCD0F5619D}</Project>
       <Name>SmasherLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SmasherLibraries\JobLib\JobLib.csproj">
+      <Project>{0C1B99C3-CEA3-4BE7-A448-60758D3C3801}</Project>
+      <Name>JobLib</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

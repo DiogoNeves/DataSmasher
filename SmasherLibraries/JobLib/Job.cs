@@ -6,17 +6,10 @@ namespace Smasher.JobLib
 	[Serializable]
 	public abstract class Job
 	{
-		#region Constructors
-		private Job () : this(0)
-		{
-			Debug.Fail("How did you call this constructor?");
-		}
-		
 		public Job (uint id)
 		{
 			mId = id;
 		}
-		#endregion // Constructors
 		
 		/// <summary>
 		/// This has to be implemented by the specialised Job.

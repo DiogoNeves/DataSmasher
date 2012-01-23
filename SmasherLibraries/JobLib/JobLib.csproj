@@ -35,6 +35,7 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JobConsumer.cs" />
+    <Compile Include="JobManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
