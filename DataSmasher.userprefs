@@ -1,21 +1,23 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="SmasherConsole/SmasherConsole.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SmasherLibraries/SmasherLib/NetworkJobListener.cs">
     <Files>
-      <File FileName="SmasherConsole/SmasherConsole.cs" Line="1" Column="14" />
-      <File FileName="SmasherLibraries/JobLib/Job.cs" Line="12" Column="4" />
-      <File FileName="SmasherLibraries/JobLib/JobConsumer.cs" Line="22" Column="112" />
-      <File FileName="SmasherLibraries/SmasherLib/LocalJobConsumer.cs" Line="48" Column="3" />
-      <File FileName="SmasherLibraries/SmasherLib/SleepJob.cs" Line="17" Column="4" />
-      <File FileName="SmasherLibraries/SmasherLib/NetworkJobListener.cs" Line="8" Column="4" />
-      <File FileName="SmasherLibraries/JobLib/JobManager.cs" Line="23" Column="34" />
+      <File FileName="SmasherConsole/SmasherConsole.cs" Line="19" Column="9" />
+      <File FileName="SmasherLibraries/JobLib/Job.cs" Line="1" Column="1" />
+      <File FileName="SmasherLibraries/JobLib/JobConsumer.cs" Line="15" Column="36" />
+      <File FileName="SmasherLibraries/SmasherLib/LocalJobConsumer.cs" Line="46" Column="14" />
+      <File FileName="SmasherLibraries/SmasherLib/SleepJob.cs" Line="1" Column="1" />
+      <File FileName="SmasherLibraries/SmasherLib/NetworkJobListener.cs" Line="89" Column="5" />
+      <File FileName="SmasherLibraries/JobLib/JobManager.cs" Line="72" Column="35" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
           <Node name="JobLib" expanded="True" />
-          <Node name="SmasherConsole" expanded="True" selected="True" />
-          <Node name="SmasherLib" expanded="True" />
+          <Node name="SmasherConsole" expanded="True" />
+          <Node name="SmasherLib" expanded="True">
+            <Node name="NetworkJobListener.cs" selected="True" />
+          </Node>
         </State>
       </Pad>
     </Pads>

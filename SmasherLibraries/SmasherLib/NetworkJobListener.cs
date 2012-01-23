@@ -27,6 +27,10 @@ namespace Smasher.SmasherLib.Net
 			mIsListening = false;
 		}
 		
+		/// <summary>
+		/// Listen the specified serverAddress, listenerPort and clientVersion.
+		/// THIS BLOCKS THE THREAD! Run in a different thread if you don't want to block!
+		/// </summary>
 		public bool Listen (string serverAddress, ushort listenerPort, string clientVersion)
 		{
 			if (mIsListening)
