@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Smasher.SmasherLib;
 using Smasher.SmasherLib.Net;
 using Smasher.JobLib;
+using NDesk.Options;
 
 namespace Smasher.UI
 {
@@ -18,6 +19,7 @@ namespace Smasher.UI
 			string serverAddress = "localhost:3000";
 			string listenerPort = "1234";
 			ParseArguments(args, ref serverAddress, ref listenerPort);
+			Console.WriteLine(serverAddress);
 
 			Console.WriteLine("Start Listener");
 
@@ -68,6 +70,19 @@ namespace Smasher.UI
 
 		private static void ParseArguments(string[] args, ref string serverAddress, ref string listenerPort)
 		{
+			string address = null;
+			string port = null;
+			OptionSet parameters = new OptionSet() {
+				{ "s|server=",	(v) => { address = v; } },
+				{ "p|port=",	(v) => { port = v; } }
+			};
+			parameters.Parse(args);
+
+			// Only change the output variables if we need too (we don't want to override defaults do we? :)
+			if (!string.IsNullOrEmpty(address))
+				serverAddress = address;
+			if (!string.IsNullOrEmpty(port))
+				listenerPort = port;
 		}
 	}
 }
