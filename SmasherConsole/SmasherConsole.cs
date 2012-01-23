@@ -14,13 +14,16 @@ namespace Smasher.UI
 	{
 		public static void Main (string[] args)
 		{
+			// Default values
 			string serverAddress = "localhost:3000";
+			string listenerPort = "1234";
+			ParseArguments(args, ref serverAddress, ref listenerPort);
 
 			Console.WriteLine("Start Listener");
 
 			IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[0];
 			ClientInfo selfInfo =
-				new ClientInfo(ipAddress.ToString() + ":1234", "0.0.1");
+				new ClientInfo(ipAddress.ToString() + ":" + listenerPort, "0.0.1");
 
 			NetworkJobListener jobListener = new NetworkJobListener();
 			if (!jobListener.Listen(serverAddress, selfInfo))
@@ -61,6 +64,10 @@ namespace Smasher.UI
 			manager.EnqueueJob(null);
 
 			manager.Start(consumer, consumer2);
+		}
+
+		private static void ParseArguments(string[] args, ref string serverAddress, ref string listenerPort)
+		{
 		}
 	}
 }
