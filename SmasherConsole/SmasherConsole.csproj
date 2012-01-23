@@ -7,9 +7,9 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C4B984B7-B571-435A-BDB0-A09419DA98F5}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SmasherConsole</RootNamespace>
+    <RootNamespace>Smasher.UI</RootNamespace>
     <AssemblyName>SmasherConsole</AssemblyName>
-    <StartupObject>SmasherConsole.Smasher</StartupObject>
+    <StartupObject>Smasher.UI.Smasher</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,7 +46,7 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy FileWidth="100" TabWidth="4" RemoveTrailingWhitespace="True" inheritsSet="Mono" inheritsScope="text/plain" scope="text/x-csharp" />
+          <TextStylePolicy FileWidth="120" TabWidth="4" RemoveTrailingWhitespace="True" inheritsSet="Mono" inheritsScope="text/plain" scope="text/x-csharp" />
           <CSharpFormattingPolicy AlignEmbeddedUsingStatements="False" AlignEmbeddedIfStatements="False" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" PlaceElseOnNewLine="True" PlaceCatchOnNewLine="True" PlaceFinallyOnNewLine="True" BlankLinesAfterUsings="2" BlankLinesBetweenTypes="2" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy FileWidth="120" TabWidth="4" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
@@ -54,13 +54,9 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
-    <ProjectReference Include="..\SmasherLibraries\JobProcessor\JobProcessor.csproj">
-      <Project>{F03CBCB8-05B4-44D0-ABB6-BE204E3B4D10}</Project>
-      <Name>JobProcessor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SmasherLibraries\Smasher\Smasher.csproj">
-      <Project>{EDCCEAE9-CC92-4D70-9624-B6E4949CD1F1}</Project>
-      <Name>Smasher</Name>
+    <ProjectReference Include="..\SmasherLibraries\SmasherLib\SmasherLib.csproj">
+      <Project>{344438B8-6988-4BE6-8A1A-86BCD0F5619D}</Project>
+      <Name>SmasherLib</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

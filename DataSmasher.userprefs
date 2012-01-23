@@ -1,0 +1,27 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="SmasherLibraries/SmasherLib/LocalJobConsumer.cs">
+    <Files>
+      <File FileName="SmasherConsole/SmasherConsole.cs" Line="116" Column="19" />
+      <File FileName="SmasherLibraries/JobLib/Job.cs" Line="12" Column="50" />
+      <File FileName="SmasherLibraries/JobLib/JobConsumer.cs" Line="5" Column="70" />
+      <File FileName="SmasherLibraries/SmasherLib/LocalJobConsumer.cs" Line="32" Column="1" />
+      <File FileName="SmasherLibraries/SmasherLib/SleepJob.cs" Line="10" Column="21" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="JobLib" expanded="True" />
+          <Node name="SmasherConsole" expanded="True" selected="True" />
+          <Node name="SmasherLib" expanded="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/dneves/Dropbox/Projects/DataSmasher/SmasherLibraries/SmasherLib/LocalJobConsumer.cs" line="30" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
