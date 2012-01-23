@@ -34,15 +34,14 @@ namespace Smasher.SmasherLib
 				JobStarted(this, job);
 			
 			// Invoke job in a different thread
+			// TODO: Cache threads and pass the job in the parameters
 			Thread jobThread = new Thread(new ThreadStart(() => {
 				job.Invoke();
 				
 				if (JobFinished != null)
 					JobFinished(this, job);
 				Interlocked.Decrement(ref mNumOfActiveWorkers);
-			}));
-			
-			jobThread.Start();
+			})).Start();
 		}
 
 		public bool HasAvailableWorkers
