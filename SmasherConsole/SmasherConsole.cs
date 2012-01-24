@@ -8,6 +8,7 @@ using Smasher.SmasherLib;
 using Smasher.SmasherLib.Net;
 using Smasher.JobLib;
 using NDesk.Options;
+using System.Net.Sockets;
 
 namespace Smasher.UI
 {
@@ -21,7 +22,7 @@ namespace Smasher.UI
 			ParseArguments(args, ref serverAddress, ref listenerPort);
 
 			// Get client information
-			IPAddress ipAddress = Dns.GetHostEntry("localhost").AddressList[0];
+			IPAddress ipAddress = SmasherAddressUtil.GetIpAddress(AddressFamily.InterNetwork);
 			ClientInfo selfInfo =
 				new ClientInfo(ipAddress.ToString() + ":" + listenerPort, "0.0.1");
 
@@ -73,14 +74,22 @@ namespace Smasher.UI
 			};
 
 			Thread listenerThread = new Thread(new ThreadStart(() => {
-				if (!jobListener.Listen(serverAddress, selfInfo))
-					Console.WriteLine("Failed to add to the server");
+				try
+				{
+					if (!jobListener.Listen(serverAddress, selfInfo))
+						Console.WriteLine("Failed to add to the server");
+				}
+				catch (SocketException)
+				{
+					Console.WriteLine("We're running without the listener!");
+				}
 			}));
 			listenerThread.Start();
 
-			/*/ // Toggle 2 sec shutdown
+			/**/ // Toggle 5 sec shutdown
 			Thread debugTerminate = new Thread(new ThreadStart(() => {
-				Thread.Sleep(2000);
+				Thread.Sleep(5000);
+				// A null job will shutdown the Job Manager which is the only thread we're waiting for
 				manager.EnqueueJob(null);
 			}));
 			debugTerminate.Start();

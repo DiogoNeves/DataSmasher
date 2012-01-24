@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Text;
+using System.Net.Sockets;
 
 namespace Smasher.SmasherLib.Net
 {
@@ -23,6 +24,27 @@ namespace Smasher.SmasherLib.Net
 				throw new FormatException("Invalid Smasher Address {0}, should be format ip:port");
 			
 			return new IPEndPoint(ipAddress, port);
+		}
+		
+		public static IPAddress GetIpAddress (AddressFamily family)
+		{
+			// TODO: Improve this
+			IPHostEntry host = Dns.GetHostEntry("localhost");
+			IPAddress address = null;
+			foreach (IPAddress ip in host.AddressList)
+			{
+				if (ip.AddressFamily == family)
+				{
+					address = ip;
+					break;
+				}
+			}
+			
+			// TODO: Find a better type of exception
+			if (address == null)
+				throw new Exception("Invalid AddressFamily");
+			
+			return address;
 		}
 	}
 }

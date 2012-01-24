@@ -55,6 +55,7 @@ namespace Smasher.SmasherLib
 				Debug.Assert(mApi != null, "You missed the API creation somewhere");
 				
 				// Remove disconnected
+				// TODO: Reuse sockets!
 				mConnectionList.RemoveAll((socket) => {
 					return !socket.Connected;
 				});
