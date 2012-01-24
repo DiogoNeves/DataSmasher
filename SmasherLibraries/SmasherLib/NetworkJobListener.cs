@@ -33,6 +33,8 @@ namespace Smasher.SmasherLib.Net
 		public NetworkJobListener ()
 		{
 			mIsListening = false;
+			mListener = null;
+			mApi = null;
 		}
 		
 		/// <summary>
@@ -47,25 +49,32 @@ namespace Smasher.SmasherLib.Net
 			}
 			
 			Uri serverUrl = new Uri("http://" + serverAddress, UriKind.Absolute);
-			ServerApi api = new ServerApi(serverUrl);
+			mApi = new ServerApi(serverUrl);
+			mListenerInfo = listenerInfo;
 			
-			if (!api.AddSmasher(listenerInfo))
+			if (!mApi.AddSmasher(mListenerInfo))
 				return false;
 			
 			// Start listening
-			UpdateLoop(SmasherAddressUtil.GetSmasherEndPoint(listenerInfo.Address));
+			UpdateLoop(SmasherAddressUtil.GetSmasherEndPoint(mListenerInfo.Address));
 			
 			return true;
 		}
 		
 		public void Stop ()
 		{
+			if (mApi != null)
+			{
+				mApi.RemoveSmasher(mListenerInfo);
+				mApi = null;
+			}
+			
 			// This stops listening
-			// TODO: Remove from the server
 			if (mListener != null && mListener.Connected)
 			{
 				// We don't want to use Shutdown here!
 				mListener.Close(500);
+				mListener = null;
 			}
 			
 			// Do this in the end
@@ -156,6 +165,8 @@ namespace Smasher.SmasherLib.Net
 		
 		private bool mIsListening;
 		private Socket mListener;
+		private ServerApi mApi;
+		private ClientInfo mListenerInfo;
 		
 		public static ManualResetEvent gAllDone = new ManualResetEvent(false);
 	}

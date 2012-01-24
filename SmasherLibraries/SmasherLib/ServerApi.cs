@@ -42,6 +42,16 @@ namespace Smasher.SmasherLib.Net
 			return !responseJson.Contains("FAIL");
 		}
 		
+		public bool RemoveSmasher (ClientInfo info)
+		{
+			string infoJson = JsonConvert.SerializeObject(info);
+			Uri removeSmasherUrl = new Uri(mServerUrl.AbsoluteUri + "removesmasher");
+			string responseJson = SendHttpRequest(removeSmasherUrl, POST, infoJson);
+			
+			// HACKYYYYYY, but is probably quicker than deserialising! :)
+			return !responseJson.Contains("FAIL");
+		}
+		
 		public IEnumerable<string> GetSmasherList (ClientInfo self)
 		{
 			string url = mServerUrl.AbsoluteUri + "smasherlist.json";

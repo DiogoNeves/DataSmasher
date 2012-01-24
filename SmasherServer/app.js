@@ -75,11 +75,33 @@ app.post('/addsmasher', function (req, res) {
 	if (address != null && address !== undefined) {
 		// Only add if we didn't yet
 		if (smasherList.indexOf(address) === -1) {
-			smasherList.push(req.body.Address);
+			smasherList.push(address);
 			res.send('{response:"OK"}');
 		}
 		else {
 			res.send('{response:"Already In"}');
+		}
+		res.end();
+	}
+	else {
+		// Invalid parameters
+		res.writeHead(500);
+		res.end('Invalid parameters');
+	}
+});
+
+app.post('/removesmasher', function (req, res) {
+	// Validate we have everything we need
+	var address = req.body.Address;
+	if (address != null && address !== undefined) {
+		// Only remove if we didn't yet
+		var index = smasherList.indexOf(address);
+		if (index !== -1) {
+			smasherList.splice(index, 1);
+			res.send('{response:"OK"}');
+		}
+		else {
+			res.send('{response:"Already Out"}');
 		}
 		res.end();
 	}
