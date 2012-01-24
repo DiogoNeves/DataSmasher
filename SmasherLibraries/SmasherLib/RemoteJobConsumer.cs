@@ -17,12 +17,12 @@ namespace Smasher.SmasherLib
 		{
 		}
 		
-		public RemoteJobConsumer (uint maxNumOfConnections)
+		public RemoteJobConsumer (int maxNumOfConnections)
 		{
 			mMaxNumOfConnections = maxNumOfConnections;
 			mHasJobWaiting = false;
-			mConnectionCount = 0;
 			mIsRunning = false;
+			mConnectionList = new List<Socket>(maxNumOfConnections);
 			mApi = null;
 		}
 		
@@ -54,7 +54,12 @@ namespace Smasher.SmasherLib
 			{
 				Debug.Assert(mApi != null, "You missed the API creation somewhere");
 				
-				if (mConnectionCount < mMaxNumOfConnections)
+				// Remove disconnected
+				mConnectionList.RemoveAll((socket) => {
+					return !socket.Connected;
+				});
+				
+				if (mConnectionList.Count < mMaxNumOfConnections)
 				{
 					// TODO: Would be cool to have an ignore list instead of just self
 					IEnumerable<string> smasherList = mApi.GetSmasherList(mSelfInfo);
@@ -73,6 +78,7 @@ namespace Smasher.SmasherLib
 								if (smasher != null && smasher.Connected)
 								{
 									// Add to connection list!
+									mConnectionList.Add(smasher);
 								}
 								else
 								{
@@ -136,14 +142,15 @@ namespace Smasher.SmasherLib
 		}
 
 		public bool HasAvailableWorkers {
-			get { return !mHasJobWaiting && mConnectionCount > 0; }
+			get { return !mHasJobWaiting && mConnectionList.Count > 0; }
 		}
 		#endregion
 		
-		private uint mMaxNumOfConnections;
-		private uint mConnectionCount;
+		private int mMaxNumOfConnections;
 		private bool mHasJobWaiting;
 		private bool mIsRunning;
+		
+		private List<Socket> mConnectionList;
 		
 		private ServerApi mApi;
 		private ClientInfo mSelfInfo;
