@@ -10,6 +10,7 @@
     <RootNamespace>Smasher.UI</RootNamespace>
     <AssemblyName>SmasherConsole</AssemblyName>
     <StartupObject>Smasher.UI.Smasher</StartupObject>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,6 +65,10 @@
     <ProjectReference Include="..\SmasherLibraries\JobLib\JobLib.csproj">
       <Project>{0C1B99C3-CEA3-4BE7-A448-60758D3C3801}</Project>
       <Name>JobLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmasherLibraries\SmasherServerAPI\SmasherServerAPI.csproj">
+      <Project>{E8CFCB27-4AE5-45A3-A096-6F5A4EE1F5A9}</Project>
+      <Name>SmasherServerAPI</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

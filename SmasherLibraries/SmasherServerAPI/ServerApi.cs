@@ -6,7 +6,7 @@ using System.Net;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace Smasher.SmasherLib.Net
+namespace Smasher.Api
 {
 	[Serializable]
 	public struct ClientInfo

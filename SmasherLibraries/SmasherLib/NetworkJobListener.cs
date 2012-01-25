@@ -2,11 +2,11 @@ using System;
 using System.Net;
 using System.IO;
 using System.Text;
-using Newtonsoft.Json;
 using Smasher.JobLib;
 using System.Net.Sockets;
 using System.Threading;
 using System.Runtime.Serialization.Formatters.Binary;
+using Smasher.Api;
 
 namespace Smasher.SmasherLib.Net
 {

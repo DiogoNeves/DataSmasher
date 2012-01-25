@@ -8,6 +8,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
+using Smasher.Api;
 
 namespace Smasher.SmasherLib
 {

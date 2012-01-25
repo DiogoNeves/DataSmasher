@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobLib", "SmasherLibraries\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmasherLib", "SmasherLibraries\SmasherLib\SmasherLib.csproj", "{344438B8-6988-4BE6-8A1A-86BCD0F5619D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmasherServerAPI", "SmasherLibraries\SmasherServerAPI\SmasherServerAPI.csproj", "{E8CFCB27-4AE5-45A3-A096-6F5A4EE1F5A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,6 +27,10 @@ Global
 		{C4B984B7-B571-435A-BDB0-A09419DA98F5}.Debug|x86.Build.0 = Debug|x86
 		{C4B984B7-B571-435A-BDB0-A09419DA98F5}.Release|x86.ActiveCfg = Release|x86
 		{C4B984B7-B571-435A-BDB0-A09419DA98F5}.Release|x86.Build.0 = Release|x86
+		{E8CFCB27-4AE5-45A3-A096-6F5A4EE1F5A9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E8CFCB27-4AE5-45A3-A096-6F5A4EE1F5A9}.Debug|x86.Build.0 = Debug|Any CPU
+		{E8CFCB27-4AE5-45A3-A096-6F5A4EE1F5A9}.Release|x86.ActiveCfg = Release|Any CPU
+		{E8CFCB27-4AE5-45A3-A096-6F5A4EE1F5A9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SmasherConsole\SmasherConsole.csproj

@@ -9,6 +9,7 @@ using Smasher.SmasherLib.Net;
 using Smasher.JobLib;
 using NDesk.Options;
 using System.Net.Sockets;
+using Smasher.Api;
 
 namespace Smasher.UI
 {
