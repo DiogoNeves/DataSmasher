@@ -21,9 +21,9 @@ namespace Smasher.SmasherLib
 		public RemoteJobConsumer (int maxNumOfConnections)
 		{
 			mMaxNumOfConnections = maxNumOfConnections;
-			mHasJobWaiting = false;
-			mIsRunning = false;
 			mConnectionList = new List<Socket>(maxNumOfConnections);
+			mListLocker = new object();
+			mIsRunning = false;
 			mApi = null;
 		}
 		
@@ -46,6 +46,16 @@ namespace Smasher.SmasherLib
 		public void Disconnect ()
 		{
 			mIsRunning = false;
+			
+			// Close all connections
+			foreach (Socket smasher in mConnectionList)
+			{
+				if (smasher.Connected)
+				{
+					smasher.Close();
+				}
+			}
+			mConnectionList.Clear();
 		}
 		
 		private void Update ()
@@ -56,10 +66,12 @@ namespace Smasher.SmasherLib
 				Debug.Assert(mApi != null, "You missed the API creation somewhere");
 				
 				// Remove disconnected
-				// TODO: Reuse sockets!
-				mConnectionList.RemoveAll((socket) => {
-					return !socket.Connected;
-				});
+				lock (mListLocker)
+				{
+					mConnectionList.RemoveAll((socket) => {
+						return !socket.Connected;
+					});
+				}
 				
 				if (mConnectionList.Count < mMaxNumOfConnections)
 				{
@@ -80,7 +92,10 @@ namespace Smasher.SmasherLib
 								if (smasher != null && smasher.Connected)
 								{
 									// Add to connection list!
-									mConnectionList.Add(smasher);
+									lock (mListLocker)
+									{
+										mConnectionList.Add(smasher);
+									}
 								}
 								else
 								{
@@ -112,7 +127,8 @@ namespace Smasher.SmasherLib
 			// Shake hands please! We say 'YELLOW' they answer 'SUP' :)
 			byte[] buffer = ServerApi.CONNECTION_ENCODING.GetBytes("YELLOW");
 			client.Send(buffer);
-
+			
+			Console.WriteLine(Encoding.UTF8.GetString(buffer));
 			int read = client.Receive(buffer);
 			string supString = ServerApi.CONNECTION_ENCODING.GetString(buffer, 0, read);
 			if (supString == "SUP")
@@ -133,26 +149,49 @@ namespace Smasher.SmasherLib
 		public void Consume (Job job)
 		{
 			Debug.Assert(HasAvailableWorkers, "Doesn't have available workers!");
-			if (mHasJobWaiting)
-				throw new InvalidOperationException("Hey! There's a job waiting! Check HasAvailableWorkers value first!");
+			if (!HasAvailableWorkers)
+				throw new InvalidOperationException("Hey! Check HasAvailableWorkers value first!");
 			
-			/*
-			BinaryFormatter formatter = new BinaryFormatter();
-			NetworkStream sendStream = new NetworkStream(client);
-			formatter.Serialize(sendStream, job);
-			*/
+			// WARNING! This is unsafe! if we have two threads competing for the same socket, it might mess up the
+			// sent data!
+			// Later keep a connection list with more information, like "is in use" etc
+			Thread sendJobThread = new Thread(new ThreadStart(() => {
+				Socket selectedSmasher = null;
+				lock(mListLocker)
+				{
+					foreach (Socket smasher in mConnectionList)
+					{
+						if (smasher.Connected)
+						{
+							selectedSmasher = smasher;
+							break;
+						}
+					}
+				}
+				
+				// We do this outside the foreach so that the lock takes as less time as possible
+				if (selectedSmasher != null)
+				{
+					// We create the formatter and stream here because they might not be thread safe
+					BinaryFormatter formatter = new BinaryFormatter();
+					NetworkStream sendStream = new NetworkStream(selectedSmasher);
+					formatter.Serialize(sendStream, job);
+				}
+			}));
+			sendJobThread.Start();
 		}
 
 		public bool HasAvailableWorkers {
-			get { return !mHasJobWaiting && mConnectionList.Count > 0; }
+			get { return mIsRunning && mConnectionList.Count > 0; }
 		}
 		#endregion
 		
 		private int mMaxNumOfConnections;
-		private bool mHasJobWaiting;
-		private bool mIsRunning;
-		
+		// TODO: Add info if it's in use!!!
 		private List<Socket> mConnectionList;
+		private object mListLocker;
+		
+		private bool mIsRunning;
 		
 		private ServerApi mApi;
 		private ClientInfo mSelfInfo;

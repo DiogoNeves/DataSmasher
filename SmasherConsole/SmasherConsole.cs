@@ -39,7 +39,8 @@ namespace Smasher.UI
 
 			JobManager manager = new JobManager();
 			Thread managerThread = new Thread(new ThreadStart(() => {
-				manager.Start(local, remote);
+				//manager.Start(local, remote);
+				manager.Start(remote, null);
 			}));
 
 			// We need the manager to one of the consumer delegates, set them here before starting consuming stuff!!!
@@ -50,16 +51,16 @@ namespace Smasher.UI
 			// Now we can start the manager
 			managerThread.Start();
 
-			/*/ // Toggle debug code
+			/**/ // Toggle debug code
 			int seed = DateTime.Now.Millisecond;
 			//int seed = 339;
 			Random generator = new Random(seed);
 			Console.WriteLine("Current Seed is {0}", seed); // in case we need to test a specific case
 			for (uint i = 0; i < 10; ++i)
 			{
-				manager.EnqueueJob(new SleepJob(i, generator.Next(5000)));
+				manager.EnqueueJob(new SleepJob(i, generator.Next(10000)));
 			}
-			manager.EnqueueJob(null);
+			//manager.EnqueueJob(null);
 			/**/
 
 			// Start listening for network jobs
@@ -85,9 +86,11 @@ namespace Smasher.UI
 					Console.WriteLine("We're running without the listener!");
 				}
 			}));
-			listenerThread.Start();
 
-			/**/ // Toggle 5 sec shutdown
+			if (listenerPort != "1234")
+				listenerThread.Start();
+
+			/*/ // Toggle 5 sec shutdown
 			Thread debugTerminate = new Thread(new ThreadStart(() => {
 				Thread.Sleep(5000);
 				// A null job will shutdown the Job Manager which is the only thread we're waiting for

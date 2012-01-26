@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using Smasher.JobLib;
 using System.Net.Sockets;
 using System.Threading;
@@ -19,8 +20,33 @@ namespace Smasher.SmasherLib.Net
 		{
 			public Socket mSocket = null;
 			
-			public const int BufferSize = 1024;
+			public const int BufferSize = 2056;
 			public byte[] mBuffer = new byte[BufferSize];
+		}
+		
+		private class RemoteJob : Job
+		{
+			public RemoteJob (Job originalJob, Action<RemoteJob> finishAction) : base(originalJob.Id)
+			{
+				mOriginalJob = originalJob;
+				mFinishAction = finishAction;
+			}
+
+			#region implemented abstract members of Smasher.JobLib.Job
+			public override void Invoke ()
+			{
+				mOriginalJob.Invoke();
+				mFinishAction(this);
+			}
+			#endregion // implemented abstract members of Smasher.JobLib.Job
+			
+			public Job OriginalJob
+			{
+				get { return mOriginalJob; }
+			}
+			
+			private Job mOriginalJob;
+			private Action<RemoteJob> mFinishAction;
 		}
 		#endregion // Inner objects
 		
@@ -56,6 +82,7 @@ namespace Smasher.SmasherLib.Net
 				return false;
 			
 			// Start listening
+			mIsListening = true;
 			UpdateLoop(SmasherAddressUtil.GetSmasherEndPoint(mListenerInfo.Address));
 			
 			return true;
@@ -148,10 +175,11 @@ namespace Smasher.SmasherLib.Net
 				Job job = (Job)formatter.Deserialize(stream);
 				if (job != null)
 				{
-					// TODO: Wrap this job in a distributed job type which contains a special event for when it's
-					// finished and also the socket reference to send back to!
 					if (JobReceived != null)
-						JobReceived(job);
+					{
+						// Wrap around a job we control so we can add a special finish action to send it back
+						JobReceived(new RemoteJob(job, SendJobBack));
+					}
 				}
 
 				handler.BeginReceive(state.mBuffer, 0, ConnectionState.BufferSize, SocketFlags.Peek,
@@ -160,6 +188,14 @@ namespace Smasher.SmasherLib.Net
 			else {
 				handler.Close();
 			}
+		}
+		
+		private void SendJobBack (RemoteJob job)
+		{
+			Debug.Assert(job.OriginalJob != null);
+			
+			Console.WriteLine("Sending job back {0}", job.Id);
+			// TODO: Send job.OriginalJob back
 		}
 		
 		
