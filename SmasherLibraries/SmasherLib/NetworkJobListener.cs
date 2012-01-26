@@ -35,6 +35,7 @@ namespace Smasher.SmasherLib.Net
 			#region implemented abstract members of Smasher.JobLib.Job
 			public override void Invoke ()
 			{
+				Console.WriteLine("Invoking remote job {0}", Id);
 				mOriginalJob.Invoke();
 				mFinishAction(this);
 			}

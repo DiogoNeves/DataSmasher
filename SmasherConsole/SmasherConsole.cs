@@ -39,8 +39,10 @@ namespace Smasher.UI
 
 			JobManager manager = new JobManager();
 			Thread managerThread = new Thread(new ThreadStart(() => {
-				//manager.Start(local, remote);
-				manager.Start(remote, null);
+				if (listenerPort == "1234")
+					manager.Start(local, null);
+				else
+					manager.Start(remote, null);
 			}));
 
 			// We need the manager to one of the consumer delegates, set them here before starting consuming stuff!!!
@@ -52,15 +54,18 @@ namespace Smasher.UI
 			managerThread.Start();
 
 			/**/ // Toggle debug code
-			int seed = DateTime.Now.Millisecond;
-			//int seed = 339;
-			Random generator = new Random(seed);
-			Console.WriteLine("Current Seed is {0}", seed); // in case we need to test a specific case
-			for (uint i = 0; i < 10; ++i)
+			if (listenerPort == "2020")
 			{
-				manager.EnqueueJob(new SleepJob(i, generator.Next(10000)));
+				int seed = DateTime.Now.Millisecond;
+				//int seed = 339;
+				Random generator = new Random(seed);
+				Console.WriteLine("Current Seed is {0}", seed); // in case we need to test a specific case
+				for (uint i = 0; i < 10; ++i)
+				{
+					manager.EnqueueJob(new SleepJob(i, generator.Next(10000)));
+				}
+				//manager.EnqueueJob(null);
 			}
-			//manager.EnqueueJob(null);
 			/**/
 
 			// Start listening for network jobs
@@ -87,7 +92,7 @@ namespace Smasher.UI
 				}
 			}));
 
-			if (listenerPort != "1234")
+			if (listenerPort != "2020")
 				listenerThread.Start();
 
 			/*/ // Toggle 5 sec shutdown
@@ -131,7 +136,7 @@ namespace Smasher.UI
 		private static void SetConsumerDelegates (IJobConsumer consumer, JobManager manager, string name)
 		{
 			consumer.JobStarted += (cons, job) => {
-				Console.WriteLine("{0} - Started job {1}({2})", name, job.Id, ((SleepJob)job).SleepTime);
+				Console.WriteLine("{0} - Started job {1}", name, job.Id);
 			};
 			consumer.JobFinished += (cons, job) => {
 				Console.WriteLine("{0} - Finished job {1}", name, job.Id);

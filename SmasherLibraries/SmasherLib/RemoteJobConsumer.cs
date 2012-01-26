@@ -199,6 +199,8 @@ namespace Smasher.SmasherLib
 					NetworkStream sendStream = new NetworkStream(selectedConnection.Smasher);
 					formatter.Serialize(sendStream, job);
 					
+					// TODO: Start reading after this (block while reading), if it fails, add job back to queue
+					
 					// Go back to unused
 					Interlocked.Exchange(ref selectedConnection.mUseCount, 0);
 				}

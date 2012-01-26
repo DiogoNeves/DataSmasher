@@ -15,6 +15,7 @@ namespace Smasher.SmasherLib
 		#region implemented abstract members of Smasher.JobLib.Job
 		public override void Invoke ()
 		{
+			Console.WriteLine("Job {0} - Sleep time {1}", Id, SleepTime);
 			Thread.Sleep(SleepTime);
 		}
 		#endregion
