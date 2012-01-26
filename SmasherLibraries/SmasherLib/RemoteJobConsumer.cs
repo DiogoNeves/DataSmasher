@@ -14,6 +14,26 @@ namespace Smasher.SmasherLib
 {
 	public class RemoteJobConsumer : IJobConsumer
 	{
+		#region Inner objects
+		private class ConnectionInfo
+		{
+			public ConnectionInfo (Socket smasher)
+			{
+				mUseCount = 0;
+				mSmasher = smasher;
+			}
+			
+			public Socket Smasher
+			{
+				get { return mSmasher; }
+			}
+			
+			public int mUseCount;
+			private readonly Socket mSmasher;
+		}
+		#endregion // Inner objects
+		
+		
 		public RemoteJobConsumer () : this(10)
 		{
 		}
@@ -21,7 +41,7 @@ namespace Smasher.SmasherLib
 		public RemoteJobConsumer (int maxNumOfConnections)
 		{
 			mMaxNumOfConnections = maxNumOfConnections;
-			mConnectionList = new List<Socket>(maxNumOfConnections);
+			mConnectionList = new List<ConnectionInfo>(maxNumOfConnections);
 			mListLocker = new object();
 			mIsRunning = false;
 			mApi = null;
@@ -48,11 +68,11 @@ namespace Smasher.SmasherLib
 			mIsRunning = false;
 			
 			// Close all connections
-			foreach (Socket smasher in mConnectionList)
+			foreach (ConnectionInfo connection in mConnectionList)
 			{
-				if (smasher.Connected)
+				if (connection.Smasher.Connected)
 				{
-					smasher.Close();
+					connection.Smasher.Close();
 				}
 			}
 			mConnectionList.Clear();
@@ -68,8 +88,8 @@ namespace Smasher.SmasherLib
 				// Remove disconnected
 				lock (mListLocker)
 				{
-					mConnectionList.RemoveAll((socket) => {
-						return !socket.Connected;
+					mConnectionList.RemoveAll((connection) => {
+						return !connection.Smasher.Connected;
 					});
 				}
 				
@@ -94,7 +114,7 @@ namespace Smasher.SmasherLib
 									// Add to connection list!
 									lock (mListLocker)
 									{
-										mConnectionList.Add(smasher);
+										mConnectionList.Add(new ConnectionInfo(smasher));
 									}
 								}
 								else
@@ -156,26 +176,31 @@ namespace Smasher.SmasherLib
 			// sent data!
 			// Later keep a connection list with more information, like "is in use" etc
 			Thread sendJobThread = new Thread(new ThreadStart(() => {
-				Socket selectedSmasher = null;
+				ConnectionInfo selectedConnection = null;
 				lock(mListLocker)
 				{
-					foreach (Socket smasher in mConnectionList)
+					foreach (ConnectionInfo connection in mConnectionList)
 					{
-						if (smasher.Connected)
+						// Check if it's connected and set as in use
+						if (connection.Smasher.Connected &&
+						    Interlocked.CompareExchange(ref connection.mUseCount, 1, 0) == 0)
 						{
-							selectedSmasher = smasher;
+							selectedConnection = connection;
 							break;
 						}
 					}
 				}
 				
 				// We do this outside the foreach so that the lock takes as less time as possible
-				if (selectedSmasher != null)
+				if (selectedConnection != null)
 				{
 					// We create the formatter and stream here because they might not be thread safe
 					BinaryFormatter formatter = new BinaryFormatter();
-					NetworkStream sendStream = new NetworkStream(selectedSmasher);
+					NetworkStream sendStream = new NetworkStream(selectedConnection.Smasher);
 					formatter.Serialize(sendStream, job);
+					
+					// Go back to unused
+					Interlocked.Exchange(ref selectedConnection.mUseCount, 0);
 				}
 			}));
 			sendJobThread.Start();
@@ -187,8 +212,7 @@ namespace Smasher.SmasherLib
 		#endregion
 		
 		private int mMaxNumOfConnections;
-		// TODO: Add info if it's in use!!!
-		private List<Socket> mConnectionList;
+		private List<ConnectionInfo> mConnectionList;
 		private object mListLocker;
 		
 		private bool mIsRunning;
