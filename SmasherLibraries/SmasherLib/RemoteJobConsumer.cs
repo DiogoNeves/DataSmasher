@@ -41,7 +41,7 @@ namespace Smasher.SmasherLib
 		public RemoteJobConsumer (int maxNumOfConnections)
 		{
 			mMaxNumOfConnections = maxNumOfConnections;
-			mConnectionList = new List<ConnectionInfo>(maxNumOfConnections);
+			mConnectionList = new Dictionary<string, ConnectionInfo>();
 			mListLocker = new object();
 			mIsRunning = false;
 			mApi = null;
@@ -68,11 +68,11 @@ namespace Smasher.SmasherLib
 			mIsRunning = false;
 			
 			// Close all connections
-			foreach (ConnectionInfo connection in mConnectionList)
+			foreach (KeyValuePair<string, ConnectionInfo> connection in mConnectionList)
 			{
-				if (connection.Smasher.Connected)
+				if (connection.Value.Smasher.Connected)
 				{
-					connection.Smasher.Close();
+					connection.Value.Smasher.Close();
 				}
 			}
 			mConnectionList.Clear();
@@ -88,9 +88,16 @@ namespace Smasher.SmasherLib
 				// Remove disconnected
 				lock (mListLocker)
 				{
-					mConnectionList.RemoveAll((connection) => {
-						return !connection.Smasher.Connected;
-					});
+					// Try to do a better remove!
+					List<string> addresses = new List<string>(mConnectionList.Keys);
+					foreach (string addr in addresses)
+					{
+						if (!mConnectionList[addr].Smasher.Connected)
+						{
+							Console.WriteLine("REMCONS - Removing disconnected Smasher {0}", addr);
+							mConnectionList.Remove(addr);
+						}
+					}
 				}
 				
 				if (mConnectionList.Count < mMaxNumOfConnections)
@@ -101,7 +108,10 @@ namespace Smasher.SmasherLib
 					{
 						foreach (string smasherAddress in smasherList)
 						{
-							Console.WriteLine("Found smasher in {0}", smasherAddress);
+							if (mConnectionList.ContainsKey(smasherAddress))
+								continue;
+							
+							Console.WriteLine("REMCONS - Found smasher in {0}", smasherAddress);
 							
 							try
 							{
@@ -114,19 +124,19 @@ namespace Smasher.SmasherLib
 									// Add to connection list!
 									lock (mListLocker)
 									{
-										mConnectionList.Add(new ConnectionInfo(smasher));
+										mConnectionList.Add(smasherAddress, new ConnectionInfo(smasher));
 									}
 								}
 								else
 								{
 									// Ignore this Smasher (hopefully we'll have ignore list later)
-									Console.WriteLine("Ignoring {0}", smasherAddress);
+									Console.WriteLine("REMCONS - Ignoring {0}", smasherAddress);
 								}
 							}
 							catch (Exception e)
 							{
 								// Ignore this Smasher (hopefully we'll have ignore list later)
-								Console.WriteLine("Ignoring {0} because of {1}", smasherAddress, e.ToString());
+								Console.WriteLine("REMCONS - Ignoring {0} because of {1}", smasherAddress, e.ToString());
 							}
 						}
 					}
@@ -148,7 +158,6 @@ namespace Smasher.SmasherLib
 			byte[] buffer = ServerApi.CONNECTION_ENCODING.GetBytes("YELLOW");
 			client.Send(buffer);
 			
-			Console.WriteLine(Encoding.UTF8.GetString(buffer));
 			int read = client.Receive(buffer);
 			string supString = ServerApi.CONNECTION_ENCODING.GetString(buffer, 0, read);
 			if (supString == "SUP")
@@ -172,14 +181,13 @@ namespace Smasher.SmasherLib
 			if (!HasAvailableWorkers)
 				throw new InvalidOperationException("Hey! Check HasAvailableWorkers value first!");
 			
-			// WARNING! This is unsafe! if we have two threads competing for the same socket, it might mess up the
-			// sent data!
-			// Later keep a connection list with more information, like "is in use" etc
 			Thread sendJobThread = new Thread(new ThreadStart(() => {
 				ConnectionInfo selectedConnection = null;
+				
+				// TODO: Is there a better way to do this without locking?
 				lock(mListLocker)
 				{
-					foreach (ConnectionInfo connection in mConnectionList)
+					foreach (ConnectionInfo connection in mConnectionList.Values)
 					{
 						// Check if it's connected and set as in use
 						if (connection.Smasher.Connected &&
@@ -194,12 +202,21 @@ namespace Smasher.SmasherLib
 				// We do this outside the foreach so that the lock takes as less time as possible
 				if (selectedConnection != null)
 				{
+					Console.WriteLine("REMCONS - Sending job {0} to remote Smasher", job.Id);
+					
 					// We create the formatter and stream here because they might not be thread safe
 					BinaryFormatter formatter = new BinaryFormatter();
-					NetworkStream sendStream = new NetworkStream(selectedConnection.Smasher);
-					formatter.Serialize(sendStream, job);
+					NetworkStream stream = new NetworkStream(selectedConnection.Smasher);
+					formatter.Serialize(stream, job);
 					
-					// TODO: Start reading after this (block while reading), if it fails, add job back to queue
+					// Start reading after this (block while reading), if it fails, add job back to queue
+					// TODO: Add timeout
+					Job result = (Job)formatter.Deserialize(stream);
+					if (result != null)
+					{
+						if (JobFinished != null)
+							JobFinished(this, result);
+					}
 					
 					// Go back to unused
 					Interlocked.Exchange(ref selectedConnection.mUseCount, 0);
@@ -214,7 +231,7 @@ namespace Smasher.SmasherLib
 		#endregion
 		
 		private int mMaxNumOfConnections;
-		private List<ConnectionInfo> mConnectionList;
+		private Dictionary<string, ConnectionInfo> mConnectionList;
 		private object mListLocker;
 		
 		private bool mIsRunning;

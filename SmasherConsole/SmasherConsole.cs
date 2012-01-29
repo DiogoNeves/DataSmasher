@@ -28,18 +28,18 @@ namespace Smasher.UI
 				new ClientInfo(ipAddress.ToString() + ":" + listenerPort, "0.0.1");
 
 			// Create consumers
-			Console.WriteLine("Create Job Consumers");
+			Console.WriteLine("MAIN - Create Job Consumers");
 
 			LocalJobConsumer local = new LocalJobConsumer(2);
 			RemoteJobConsumer remote = new RemoteJobConsumer();
 			remote.Connect(serverAddress, selfInfo);
 
 			// Create the job manager (different thread)
-			Console.WriteLine("Start Job Manager");
+			Console.WriteLine("MAIN - Start Job Manager");
 
 			JobManager manager = new JobManager();
 			Thread managerThread = new Thread(new ThreadStart(() => {
-				if (listenerPort == "1234")
+				if (listenerPort == gListenter)
 					manager.Start(local, null);
 				else
 					manager.Start(remote, null);
@@ -54,12 +54,12 @@ namespace Smasher.UI
 			managerThread.Start();
 
 			/**/ // Toggle debug code
-			if (listenerPort == "2020")
+			if (listenerPort != gListenter)
 			{
 				int seed = DateTime.Now.Millisecond;
 				//int seed = 339;
 				Random generator = new Random(seed);
-				Console.WriteLine("Current Seed is {0}", seed); // in case we need to test a specific case
+				Console.WriteLine("MAIN - Current Seed is {0}", seed); // in case we need to test a specific case
 				for (uint i = 0; i < 10; ++i)
 				{
 					manager.EnqueueJob(new SleepJob(i, generator.Next(10000)));
@@ -69,30 +69,30 @@ namespace Smasher.UI
 			/**/
 
 			// Start listening for network jobs
-			Console.WriteLine("Start Network Listener");
+			Console.WriteLine("MAIN - Start Network Listener");
 
 			NetworkJobListener jobListener = new NetworkJobListener();
 			jobListener.JobReceived += (job) => {
-				Console.WriteLine("Received {0} job over the network", job.Id);
+				Console.WriteLine("LIST - Received {0} job over the network", job.Id);
 				manager.EnqueueJob(job);
 			};
 			jobListener.JobReturned += (job) => {
-				Console.WriteLine("Returned {0} job over the network", job.Id);
+				Console.WriteLine("LIST - Returned {0} job over the network", job.Id);
 			};
 
 			Thread listenerThread = new Thread(new ThreadStart(() => {
 				try
 				{
 					if (!jobListener.Listen(serverAddress, selfInfo))
-						Console.WriteLine("Failed to add to the server");
+						Console.WriteLine("LIST - Failed to add to the server");
 				}
 				catch (SocketException)
 				{
-					Console.WriteLine("We're running without the listener!");
+					Console.WriteLine("LIST - We're running without the listener!");
 				}
 			}));
 
-			if (listenerPort != "2020")
+			if (listenerPort == gListenter)
 				listenerThread.Start();
 
 			/*/ // Toggle 5 sec shutdown
@@ -107,12 +107,12 @@ namespace Smasher.UI
 			managerThread.Join();
 
 			// Terminate update threads!
-			Console.WriteLine("Terminating update loops");
+			Console.WriteLine("MAIN - Terminating update loops");
 
 			remote.Disconnect();
 			jobListener.Stop();
 
-			Console.WriteLine("The End!");
+			Console.WriteLine("MAIN - The End!");
 			Console.ReadKey();
 		}
 
@@ -136,18 +136,21 @@ namespace Smasher.UI
 		private static void SetConsumerDelegates (IJobConsumer consumer, JobManager manager, string name)
 		{
 			consumer.JobStarted += (cons, job) => {
-				Console.WriteLine("{0} - Started job {1}", name, job.Id);
+				Console.WriteLine("JOB {0} - Started job {1}", name, job.Id);
 			};
 			consumer.JobFinished += (cons, job) => {
-				Console.WriteLine("{0} - Finished job {1}", name, job.Id);
+				Console.WriteLine("JOB {0} - Finished job {1}", name, job.Id);
 			};
 			// TODO: Add reason to the delegate!
 			consumer.JobFailed += (cons, job) => {
-				Console.WriteLine("{0} - Failed to consume job {1}", name, job.Id);
+				Console.WriteLine("JOB {0} - Failed to consume job {1}", name, job.Id);
 
 				// Add it back to the queue
 				manager.EnqueueJob(job);
 			};
 		}
+
+		// This is just a test hack
+		private static readonly string gListenter = "2020";
 	}
 }

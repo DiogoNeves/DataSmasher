@@ -26,16 +26,17 @@ namespace Smasher.SmasherLib.Net
 		
 		private class RemoteJob : Job
 		{
-			public RemoteJob (Job originalJob, Action<RemoteJob> finishAction) : base(originalJob.Id)
+			public RemoteJob (Job original, Socket parent, Action<RemoteJob> finishAction) : base(original.Id)
 			{
-				mOriginalJob = originalJob;
+				mOriginalJob = original;
+				mParentSmasher = parent;
 				mFinishAction = finishAction;
 			}
 
 			#region implemented abstract members of Smasher.JobLib.Job
 			public override void Invoke ()
 			{
-				Console.WriteLine("Invoking remote job {0}", Id);
+				Console.WriteLine("LIST - Invoking remote job {0}", Id);
 				mOriginalJob.Invoke();
 				mFinishAction(this);
 			}
@@ -46,8 +47,14 @@ namespace Smasher.SmasherLib.Net
 				get { return mOriginalJob; }
 			}
 			
-			private Job mOriginalJob;
-			private Action<RemoteJob> mFinishAction;
+			public Socket ParentSmasher
+			{
+				get { return mParentSmasher; }
+			}
+			
+			private readonly Job mOriginalJob;
+			private readonly Socket mParentSmasher;
+			private readonly Action<RemoteJob> mFinishAction;
 		}
 		#endregion // Inner objects
 		
@@ -179,7 +186,7 @@ namespace Smasher.SmasherLib.Net
 					if (JobReceived != null)
 					{
 						// Wrap around a job we control so we can add a special finish action to send it back
-						JobReceived(new RemoteJob(job, SendJobBack));
+						JobReceived(new RemoteJob(job, handler, SendJobBack));
 					}
 				}
 
@@ -195,8 +202,22 @@ namespace Smasher.SmasherLib.Net
 		{
 			Debug.Assert(job.OriginalJob != null);
 			
-			Console.WriteLine("Sending job back {0}", job.Id);
-			// TODO: Send job.OriginalJob back
+			if (job.ParentSmasher.Connected)
+			{
+				Console.WriteLine("LIST - Sending job back {0}", job.Id);
+				
+				// TODO: Wait while receiving data!
+				BinaryFormatter formatter = new BinaryFormatter();
+				NetworkStream stream = new NetworkStream(job.ParentSmasher);
+				formatter.Serialize(stream, job.OriginalJob);
+				
+				if (JobReturned != null)
+					JobReturned(job.OriginalJob);
+			}
+			else
+			{
+				Console.WriteLine("LIST - Oops, {0}'s parent socket has been closed", job.Id);
+			}
 		}
 		
 		
