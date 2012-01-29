@@ -221,6 +221,16 @@ namespace Smasher.SmasherLib
 					// Go back to unused
 					Interlocked.Exchange(ref selectedConnection.mUseCount, 0);
 				}
+				else
+				{
+					// We could use the HasAvailableWorkers to only let it Consume if there were AVAILABLE workers
+					// but we'd have to iterate through each connection everytime we call HasAvailableWorkers...
+					// not ideal. It's much simpler to simply add the job back to the queue
+					// TODO: Obviously this needs more work and thought! We don't want a job to keep coming back and
+					// forward because we only have a connection and is being used!
+					if (JobFailed != null)
+						JobFailed(this, job);
+				}
 			}));
 			sendJobThread.Start();
 		}
