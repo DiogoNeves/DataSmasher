@@ -64,7 +64,6 @@ namespace Smasher.UI
 				{
 					manager.EnqueueJob(new SleepJob(i, generator.Next(10000)));
 				}
-				//manager.EnqueueJob(null);
 			}
 			/**/
 
@@ -95,7 +94,7 @@ namespace Smasher.UI
 			if (listenerPort == gListenter)
 				listenerThread.Start();
 
-			/*/ // Toggle 5 sec shutdown
+			/**/ // Toggle 5 sec shutdown
 			Thread debugTerminate = new Thread(new ThreadStart(() => {
 				Thread.Sleep(5000);
 				// A null job will shutdown the Job Manager which is the only thread we're waiting for
