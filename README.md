@@ -1,6 +1,6 @@
 # Data Smasher
 
-**DataSmasher is a distributed, multi-threaded, job execution application.** Jobs are a generic concept, they can compile code, crunch data, search data and the list goes on...
+**DataSmasher is a distributed, multi-threaded, job execution framework.** Jobs are a generic concept, they can compile code, crunch data, search data and the list goes on...
 DataSmasher exists because I wanted to learn more about distributed and multi-threaded software development and doesn't have a big plan (yet), but I want to keep it alive for now (it's quite fun).
 
 I hope you like it. Any feedback, requests, critiques or general “Hey, how's it going?” comments are welcomed±.
